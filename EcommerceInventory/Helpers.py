@@ -17,9 +17,9 @@ def getDynamicFormModels():
         'product':'ProductServices.Products',
         'category':'ProductServices.Categories',
         'warehouse':'InventoryServices.Warehouse',
-        'supplier':'UserServices.Users',
+        'supplier':'UserServices.User',
         'rackShelfFloor':'InventoryServices.RackAndShelvesAndFloor',
-        'users':'UserServices.Users',
+        'users':'UserServices.User',
     }
 
 def getSuperAdminDynamicFormModels():
