@@ -1,4 +1,4 @@
-# from EcommerceInventory.permission import IsSuperAdmin
+from EcommerceInventory.permission import IsSuperAdmin
 from EcommerceInventory.Helpers import renderResponse
 from UserServices.models import User
 from rest_framework.views import APIView
@@ -77,9 +77,9 @@ class ProtectedAPIView(APIView):
     def get(self, request):
         return renderResponse(data='This is a protected API. You can access this because you are authenticated.',message='This is a protected API. You can access this because you are authenticated.',status=status.HTTP_400_BAD_REQUEST)
 
-# class SuperAdminCheckApi(APIView):
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [IsAuthenticated,IsSuperAdmin]
+class SuperAdminCheckApi(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated,IsSuperAdmin]
 
-#     def get(self, request):
-#         return renderResponse(data='This is a Super Admin API. You can access this because you are authenticated.',message='This is a protected API. You can access this because you are authenticated.',status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request):
+        return renderResponse(data='This is a Super Admin API. You can access this because you are authenticated.',message='This is a protected API. You can access this because you are authenticated.',status=status.HTTP_400_BAD_REQUEST)
