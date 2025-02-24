@@ -82,7 +82,7 @@ def getDynamicFormFields(model_instance,domain_user_id,skip_related=[],skip_fiel
                     options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,related_model.defaultkey())
                 else:
                     related_key_name=related_model._meta.pk.name
-                    options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,'name')
+                    options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,'username')
 
                 fielddata['options']=[{'id':option[0],'value':option[1]} for option in options]
                 fielddata['type']='select'

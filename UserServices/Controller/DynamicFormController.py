@@ -91,6 +91,81 @@ class DynamicFormController(APIView):
         response_json['id']=model_json[0]['pk']
         #Returning the Response
         return renderResponse(data=response_json,message='Data saved successfully')
+# from django.db import transaction
+# from django.apps import apps
+# from django.core.serializers import serialize
+# import json
+
+# class DynamicFormController(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, modelName, id=None):
+#         # Get the Products model from the ProductServices app
+#         if modelName not in getDynamicFormModels():
+#             return renderResponse(data='Invalid Model Name', message='Invalid Model Name', status=400)
+
+#         try:
+#             model_class = apps.get_model("ProductServices", "Products")
+#         except LookupError:
+#             return renderResponse(data='Model Not Found', message='Model Not Found', status=404)
+#         print(f"Received modelName: {modelName}")
+
+#         # Get model fields info
+#         fields_info = model_class._meta.fields
+#         model_fields = {field.name for field in fields_info}
+#         exclude_fields = getExludeFields()
+
+#         # Check required fields
+#         required_fields = [field.name for field in fields_info if not field.null and field.default is not None and field.name not in exclude_fields]
+#         missing_fields = [field for field in required_fields if field not in request.data]
+
+#         if missing_fields:
+#             return renderResponse(data=[f'The Following field is required: {field}' for field in missing_fields], message='Validation Error', status=400)
+
+#         # Copy request data and filter relevant fields
+#         fields = request.data.copy()
+#         fieldsdata = {key: value for key, value in fields.items() if key in model_fields}
+
+#         # Assign ForeignKey fields properly
+#         for field in fields_info:
+#             if field.is_relation and field.name in fieldsdata and isinstance(fieldsdata[field.name], int):
+#                 related_model = field.related_model
+#                 try:
+#                     fieldsdata[field.name] = related_model.objects.get(id=fieldsdata[field.name])
+#                 except related_model.DoesNotExist:
+#                     return renderResponse(data=f'{field.name} Relation Not Exist', message=f'{field.name} Relation Not Exist', status=404)
+#             elif field.is_relation and field.name in fieldsdata:
+#                 fieldsdata.pop(field.name)
+
+#         # Assign user details
+#         fieldsdata['domain_user_id'] = request.user.domain_user_id
+#         fieldsdata['added_by_user_id'] = User.objects.get(id=request.user.id)
+
+#         with transaction.atomic():
+#             if id:
+#                 model_instance = model_class.objects.filter(id=id, domain_user_id=request.user.domain_user_id).first()
+#                 if not model_instance:
+#                     return renderResponse(data='Model Item Not Found', message='Model Item Not Found', status=404)
+                
+#                 # Update fields
+#                 for key, value in fieldsdata.items():
+#                     setattr(model_instance, key, value)
+#                 model_instance.save()
+#             else:
+#                 model_instance = model_class.objects.create(**fieldsdata)
+#                 model_instance.save()
+
+#         # Debugging
+#         print(f"Instance Exists in DB: {model_class.objects.filter(id=model_instance.id).exists()}")
+
+#         # Serialize response
+#         serialized_data = serialize('json', [model_instance])
+#         model_json = json.loads(serialized_data)
+#         response_json = model_json[0]['fields']
+#         response_json['id'] = model_json[0]['pk']
+
+#         return renderResponse(data=response_json, message='Data saved successfully')
 
     def get(self,request,modelName,id=None):
         if modelName not in getDynamicFormModels():

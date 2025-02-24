@@ -32,4 +32,9 @@ urlpatterns = [
      path('api/superAdminForm/<str:modelName>/',SuperAdminDynamicFormController.as_view(),name='superadmindynamicForm'),
      path('api/moduleUrls/',ModuleUrlsListAPIView.as_view(),name='moduleUrls_superadmin'),
      path('api/getMenus/',ModuleView.as_view(),name='sidebarmenu'),
+     path('api/products/', include('ProductServices.urls')),
+     path('api/inventory/', include('InventoryServices.urls')),
+     path('api/orders/',include('OrderService.urls')),
+    #  path('api/products/', include('ProductServices.urls')),
+     
 ]

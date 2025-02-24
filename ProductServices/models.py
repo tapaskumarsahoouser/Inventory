@@ -41,7 +41,7 @@ class Products(models.Model):
     seo_title=models.CharField(max_length=255)
     seo_description=models.TextField()
     seo_keywords=models.JSONField()
-    addition_details=models.JSONField()
+    addition_details=models.JSONField(blank=True,null=True)
     category_id=models.ForeignKey(Categories,on_delete=models.CASCADE,blank=True,null=True,related_name='category_id_products')
     domain_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='domain_user_id_products')
     added_by_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='added_by_user_id_products')

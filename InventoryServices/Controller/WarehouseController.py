@@ -39,10 +39,10 @@ class WarehouseSerializer(serializers.ModelSerializer):
         return "#"+str(obj.added_by_user_id.id)+" "+obj.added_by_user_id.username
     
     def get_domain_user_id(self,obj):
-        return "#"+str(obj.domain_user_id.id)+" "+obj.domain_user_id.username
+        return "#"+str(obj.domain_user_id)+" "+str(obj.domain_user_id)                  # This function is changed by tapas.
     
     def get_warehouse_manager(self,obj):
-        return "#"+str(obj.warehouse_manager.id)+" "+obj.warehouse_manager.username
+        return "#"+str(obj.warehouse_manager)+" "+str(obj.warehouse_manager)                    # This function is changed by tapas.
     
     def get_rack_shelf_floor(self,obj):
         queryset=RackAndShelvesAndFloor.objects.filter(warehouse_id=obj.id)
@@ -56,7 +56,7 @@ class WarehouseListView(generics.ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset=Warehouse.objects.filter(domain_user_id=self.request.user.domain_user_id.id)
+        queryset=Warehouse.objects.filter(domain_user_id=self.request.user.domain_user_id)                    # This function is changed by tapas.
         return queryset
     
     @CommonListAPIMixin.common_list_decorator(WarehouseSerializer)

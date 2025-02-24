@@ -52,6 +52,8 @@ class PurchaseOrderItems(models.Model):
     domain_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='domain_user_id_purchase_order_items')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
+
+
 class PurchaseOrderInwardedLog(models.Model):
     id=models.AutoField(primary_key=True)
     po_id=models.ForeignKey(PurchaseOrder,on_delete=models.CASCADE,blank=True,null=True,related_name='po_item_id')
@@ -163,6 +165,9 @@ class SalesOrderOrderItems(models.Model):
     domain_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='domain_user_id_so_order_items')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
+
+
+    
 class SalesOrderOutWardedLog(models.Model):
     id=models.AutoField(primary_key=True)
     so_id=models.ForeignKey(SalesOrder,on_delete=models.CASCADE,blank=True,null=True,related_name='so_order_id_outwarded_log')

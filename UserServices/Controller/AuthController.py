@@ -40,17 +40,27 @@ class SignupAPIView(APIView):
         access['profile_pic'] = user.profile_pic
 
         return Response({'access':str(access),'refresh':str(refresh),'message':'User Created Successfully'},status=status.HTTP_201_CREATED)
-    
+from django.contrib.auth.hashers import check_password
 class LoginAPIView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+        print(username, password)
 
         if username is None or password is None:
             return renderResponse(data='Please provide both username and password',message='Please provide both username and password',status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.get(username=username)
+        print("Stored password hash:", user.password)  # Should start with 'pbkdf2_sha256$...'
+        print("Password match:", check_password(password, user.password))  
 
+
+        print(User.objects.filter(username=username).exists())
         user = authenticate(request, username=username, password=password)
+        # user = User.objects.filter( username=username, password=password)
+        print(user)
+        print("11111111111111")
         if user:
+            print(user)
             refresh = RefreshToken.for_user(user)
             access =refresh.access_token
             access['username'] = user.username

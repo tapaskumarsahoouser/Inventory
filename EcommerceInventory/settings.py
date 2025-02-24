@@ -81,6 +81,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'EcommerceInventory.wsgi.application'
 
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default Django authentication
+]
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
