@@ -15,10 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from EcommerceInventory.views import index,FileUploadView
 from django.urls import path,include
 from UserServices.Controller.DynamicFormController import DynamicFormController
 from UserServices.Controller.SidebarController import ModuleUrlsListAPIView, ModuleView
 from UserServices.Controller.SuperAdminDynamicFormController import SuperAdminDynamicFormController
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 
@@ -35,6 +38,7 @@ urlpatterns = [
      path('api/products/', include('ProductServices.urls')),
      path('api/inventory/', include('InventoryServices.urls')),
      path('api/orders/',include('OrderService.urls')),
+     path('api/uploads/',FileUploadView.as_view(),name='fileupload')
     #  path('api/products/', include('ProductServices.urls')),
      
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

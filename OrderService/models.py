@@ -48,10 +48,13 @@ class PurchaseOrderItems(models.Model):
     tax_percentage=models.DecimalField(max_digits=10,decimal_places=2,default=0)
     tax_amount=models.DecimalField(max_digits=10,decimal_places=2,default=0)
     discount_type=models.CharField(max_length=255,choices=[('PERCENTAGE','PERCENTAGE'),('AMOUNT','AMOUNT'),('NO DISCOUNT','NO DISCOUNT')],default='PERCENTAGE')
-    additional_details=models.JSONField()
+    additional_details=models.JSONField(null=True,blank=True)
     domain_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='domain_user_id_purchase_order_items')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.id
 
 
 class PurchaseOrderInwardedLog(models.Model):

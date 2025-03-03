@@ -1,6 +1,8 @@
 from .controller.CategoryController import CategoryListView
 from .controller.ProductController import ProductListView,ProductReviewListView,CreateProductReviewView,UpdateProductReviewView,ProductQuestionsListView,CreateProductQuestionsView,UpdateProductQuestionsView
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('categories/',CategoryListView.as_view(),name='category_list'),
@@ -13,4 +15,4 @@ urlpatterns = [
     path('productQuestions/<str:product_id>/',ProductQuestionsListView.as_view(),name='product_question_list'),
     path('createProductQuestion/<str:product_id>/',CreateProductQuestionsView.as_view(),name='product_question_create'),
     path('updateProductQuestion/<str:product_id>/<pk>/',UpdateProductQuestionsView.as_view(),name='product_question_update'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

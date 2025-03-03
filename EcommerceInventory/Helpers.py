@@ -33,61 +33,140 @@ def checkisFileField(field):
 def getExludeFields():
     return ['id','created_at','updated_at','domain_user_id','added_by_user_id','created_by_user_id','updated_by_user_id','is_staff','is_superuser','is_active','plan_type','last_login','last_device','date_joined','last_ip','domain_name']
 
-def getDynamicFormFields(model_instance,domain_user_id,skip_related=[],skip_fields=[]):
-    fields={'text':[],'select':[],'checkbox':[],'radio':[],'textarea':[],'json':[],'file':[]}
-    for field in model_instance._meta.fields:
-        if field.name in getExludeFields() or field.name in skip_fields:
-            continue
+# def getDynamicFormFields(model_instance,domain_user_id,skip_related=[],skip_fields=[]):
+#     fields={'text':[],'select':[],'checkbox':[],'radio':[],'textarea':[],'json':[],'file':[]}
+#     for field in model_instance._meta.fields:
+#         if field.name in getExludeFields() or field.name in skip_fields:
+#             continue
 
-        label=field.name.replace('_',' ').title()
-        fielddata={
-            'name':field.name,
-            'label':label,
-            'placeholder':'Enter '+label,
-            'default':model_instance.__dict__[field.name] if field.name in model_instance.__dict__ else '',
-            'required':not field.null,
-        }
-        if checkisFileField(field.name):
-            fielddata['type']='file'
-        elif field.get_internal_type()=='TextField':
-            fielddata['type']='textarea'
-        elif field.get_internal_type()=='JSONField':
-            fielddata['type']='json'
-        elif field.get_internal_type()=='CharField' and field.choices:
-            fielddata['type']='select'
-            fielddata['options']=[{'id':choice[0],'value':choice[1]} for choice in field.choices]
-        elif field.get_internal_type()=='CharField' or field.get_internal_type()=='IntegerField' or field.get_internal_type()=='DecimalField' or field.get_internal_type()=='FloatField':
-            fielddata['type']='text'
-        elif field.get_internal_type()=='BooleanField' or field.get_internal_type()=='NullBooleanField':
-            fielddata['type']='checkbox'
-        elif field.get_internal_type()=='DateField': 
-            fielddata['type']='text'
-            fielddata['isDate']=True
-        elif field.get_internal_type()=='DateTimeField':
-            fielddata['type']='text'
-            fielddata['isDateTime']=True
-        else:
-            fielddata['type']='text'
-            if isinstance(field,ForeignKey):
-                if field.name in skip_related:
-                    fields['text'].append(fielddata)
-                    continue
+#         label=field.name.replace('_',' ').title()
+#         fielddata={
+#             'name':field.name,
+#             'label':label,
+#             'placeholder':'Enter '+label,
+#             'default':model_instance.__dict__[field.name] if field.name in model_instance.__dict__ else '',
+#             'required':not field.null,
+#         }
+#         if checkisFileField(field.name):
+#             fielddata['type']='file'
+#         elif field.get_internal_type()=='TextField':
+#             fielddata['type']='textarea'
+#         elif field.get_internal_type()=='JSONField':
+#             fielddata['type']='json'
+#         elif field.get_internal_type()=='CharField' and field.choices:
+#             fielddata['type']='select'
+#             fielddata['options']=[{'id':choice[0],'value':choice[1]} for choice in field.choices]
+#         elif field.get_internal_type()=='CharField' or field.get_internal_type()=='IntegerField' or field.get_internal_type()=='DecimalField' or field.get_internal_type()=='FloatField':
+#             fielddata['type']='text'
+#         elif field.get_internal_type()=='BooleanField' or field.get_internal_type()=='NullBooleanField':
+#             fielddata['type']='checkbox'
+#         elif field.get_internal_type()=='DateField': 
+#             fielddata['type']='text'
+#             fielddata['isDate']=True
+#         elif field.get_internal_type()=='DateTimeField':
+#             fielddata['type']='text'
+#             fielddata['isDateTime']=True
+#         else:
+#             fielddata['type']='text'
+#             if isinstance(field,ForeignKey):
+#                 if field.name in skip_related:
+#                     fields['text'].append(fielddata)
+#                     continue
 
-                related_model=field.related_model
-                related_key=field.name
-                related_key_name=''
+#                 related_model=field.related_model
+#                 related_key=field.name
+#                 related_key_name=''
 
-                if hasattr(related_model,'defaultkey'):
-                    related_key_name=related_model.defaultkey()
-                    options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,related_model.defaultkey())
-                else:
-                    related_key_name=related_model._meta.pk.name
-                    options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,'username')
+#                 if hasattr(related_model,'defaultkey'):
+#                     related_key_name=related_model.defaultkey()
+#                     options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,related_model.defaultkey())
+#                 else:
+#                     related_key_name=related_model._meta.pk.name
+#                     options=related_model.objects.filter(domain_user_id=domain_user_id).values_list('id',related_key_name,'username')
 
-                fielddata['options']=[{'id':option[0],'value':option[1]} for option in options]
-                fielddata['type']='select'
-                fielddata['default']=model_to_dict(model_instance)[field.name] if field.name in model_to_dict(model_instance) else ''
-        fields[fielddata['type']].append(fielddata)                
+#                 fielddata['options']=[{'id':option[0],'value':option[1]} for option in options]
+#                 fielddata['type']='select'
+#                 fielddata['default']=model_to_dict(model_instance)[field.name] if field.name in model_to_dict(model_instance) else ''
+#         fields[fielddata['type']].append(fielddata)                
+#     return fields
+
+
+
+from django.forms.models import model_to_dict
+from django.db.models import ForeignKey
+
+def getDynamicFormFields(model_instance, domain_user_id, skip_related=[], skip_fields=[]):
+    if model_instance is None:
+        print("Error: model_instance is None. Cannot retrieve fields.")
+        return {"error": "Invalid model instance"}
+
+    fields = {'text': [], 'select': [], 'checkbox': [], 'radio': [], 'textarea': [], 'json': [], 'file': []}
+
+    try:
+        for field in model_instance._meta.fields:
+            if field.name in getExludeFields() or field.name in skip_fields:
+                continue
+
+            label = field.name.replace('_', ' ').title()
+            fielddata = {
+                'name': field.name,
+                'label': label,
+                'placeholder': 'Enter ' + label,
+                'default': getattr(model_instance, field.name, ''),
+                'required': not field.null,
+            }
+
+            if checkisFileField(field.name):
+                fielddata['type'] = 'file'
+            elif field.get_internal_type() == 'TextField':
+                fielddata['type'] = 'textarea'
+            elif field.get_internal_type() == 'JSONField':
+                fielddata['type'] = 'json'
+            elif field.get_internal_type() == 'CharField' and field.choices:
+                fielddata['type'] = 'select'
+                fielddata['options'] = [{'id': choice[0], 'value': choice[1]} for choice in field.choices]
+            elif field.get_internal_type() in ['CharField', 'IntegerField', 'DecimalField', 'FloatField']:
+                fielddata['type'] = 'text'
+            elif field.get_internal_type() in ['BooleanField', 'NullBooleanField']:
+                fielddata['type'] = 'checkbox'
+            elif field.get_internal_type() == 'DateField':
+                fielddata['type'] = 'text'
+                fielddata['isDate'] = True
+            elif field.get_internal_type() == 'DateTimeField':
+                fielddata['type'] = 'text'
+                fielddata['isDateTime'] = True
+            else:
+                fielddata['type'] = 'text'
+
+                if isinstance(field, ForeignKey):
+                    if field.name in skip_related:
+                        fields['text'].append(fielddata)
+                        continue
+
+                    related_model = field.related_model
+                    related_key = field.name
+
+                    if hasattr(related_model, 'defaultkey'):
+                        related_key_name = related_model.defaultkey()
+                        options = related_model.objects.filter(domain_user_id=domain_user_id).values_list(
+                            'id', related_key_name
+                        )
+                    else:
+                        related_key_name = related_model._meta.pk.name
+                        options = related_model.objects.filter(domain_user_id=domain_user_id).values_list(
+                            'id', related_key_name
+                        )
+
+                    fielddata['options'] = [{'id': option[0], 'value': option[1]} for option in options]
+                    fielddata['type'] = 'select'
+                    fielddata['default'] = model_to_dict(model_instance).get(field.name, '')
+
+            fields[fielddata['type']].append(fielddata)
+
+    except Exception as e:
+        print(f"Error processing fields: {e}")
+        return {"error": f"Field processing failed: {str(e)}"}
+
     return fields
 
 

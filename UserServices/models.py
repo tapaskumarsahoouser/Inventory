@@ -30,8 +30,8 @@ class User(AbstractUser):
     domain_name=models.CharField(max_length=50,blank=True,null=True)
     plan_type=models.CharField(max_length=50,blank=True,default='Free',null=True,choices=(('Free','Free'),('Basic','Basic'),('Standard','Standard'),('Premium','Premium'),('Enterprise','Enterprise')))
     added_by_user_id=models.ForeignKey('self',on_delete=models.CASCADE,blank=True,null=True,related_name='added_by_user_id_user')
-    # created_at=models.DateTimeField(auto_now_add=True)
-    # # updated_at=models.DateTimeField(auto_now=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.username
@@ -104,3 +104,10 @@ class ActivityLog(models.Model):
     domain_user_id=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True,related_name='domain_user_id_activity_log')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
+
+
+from django.db import models
+
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to="uploads/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)

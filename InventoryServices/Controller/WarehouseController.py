@@ -5,24 +5,52 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+# @createParsedCreatedAtUpdatedAt
+# class RackShelfFloorSerializer(serializers.ModelSerializer):
+#     added_by_user_id=serializers.SerializerMethodField()
+#     domain_user_id=serializers.SerializerMethodField()
+#     warehouse_id=serializers.SerializerMethodField()
+
+#     class Meta:
+#         model = RackAndShelvesAndFloor
+#         fields = '__all__'
+
+#     def get_added_by_user_id(self,obj): 
+#         return "#"+str(obj.added_by_user_id.id)+" "+obj.added_by_user_id.username
+    
+#     def get_domain_user_id(self,obj):
+#         return "#"+str(obj.domain_user_id.id)+" "+obj.domain_user_id.username
+    
+#     def get_warehouse_id(self,obj):
+#         return "#"+str(obj.warehouse_id.id)+" "+obj.warehouse_id.name
+
+
 @createParsedCreatedAtUpdatedAt
-class RackShelfFloorSerializer(serializers.ModelSerializer):
-    added_by_user_id=serializers.SerializerMethodField()
-    domain_user_id=serializers.SerializerMethodField()
-    warehouse_id=serializers.SerializerMethodField()
+class RackShelfFloorSerializer(serializers.ModelSerializer):                        # This function is changed by Dipti.
+    
+    added_by_user_id = serializers.SerializerMethodField()
+    domain_user_id = serializers.SerializerMethodField()
+    warehouse_id = serializers.SerializerMethodField()
 
     class Meta:
         model = RackAndShelvesAndFloor
         fields = '__all__'
 
-    def get_added_by_user_id(self,obj):
-        return "#"+str(obj.added_by_user_id.id)+" "+obj.added_by_user_id.username
-    
-    def get_domain_user_id(self,obj):
-        return "#"+str(obj.domain_user_id.id)+" "+obj.domain_user_id.username
-    
-    def get_warehouse_id(self,obj):
-        return "#"+str(obj.warehouse_id.id)+" "+obj.warehouse_id.name
+    def get_added_by_user_id(self, obj):
+        if obj.added_by_user_id:
+            return f"#{obj.added_by_user_id.id} {obj.added_by_user_id.username}"
+        return None 
+
+    def get_domain_user_id(self, obj):
+        if obj.domain_user_id:
+            return f"#{obj.domain_user_id.id} {obj.domain_user_id.username}"
+        return None  
+
+    def get_warehouse_id(self, obj):
+        if obj.warehouse_id:
+            return f"#{obj.warehouse_id.id} {obj.warehouse_id.name}"
+        return None 
+
 
 @createParsedCreatedAtUpdatedAt
 class WarehouseSerializer(serializers.ModelSerializer):

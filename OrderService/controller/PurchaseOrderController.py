@@ -73,9 +73,9 @@ class CreatePurchaseOrderView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,id=None):
-        po=PurchaseOrder.objects.filter(domain_user_id=request.user.domain_user_id.id,id=id).first() if id else PurchaseOrder()
-        print(request.user)
-        print(request.user.is_authenticated) 
+        po=PurchaseOrder.objects.filter(domain_user_id=request.user.domain_user_id,id=id).first() if id else PurchaseOrder()
+
+        print("Its get API")
         poItems=PurchaseOrderItems.objects.filter(po_id=id) if id else []
         poItems=PurchaseOrderItemSerializer(poItems,many=True).data
         try:
@@ -86,9 +86,12 @@ class CreatePurchaseOrderView(generics.CreateAPIView):
         print("Is authenticated:", request.user.is_authenticated)
         print("Domain User ID:", request.user.domain_user_id)
 
-        poFields=getDynamicFormFields(po,request.user.domain_user_id.id,skip_related=['supplier_id'],skip_fields=['shipping_cancelled_amount','shipping_cancelled_tax_amount','approved_at','cancelled_at','received_at','returned_at','last_updated_by_user_id','status','approved_by_user_id','cancelled_by_user_id','received_by_user_id','returned_by_user_id','cancelled_reason'])
-        poItemFields=getDynamicFormFields(PurchaseOrderItems(),request.user.domain_user_id.id,skip_related=['product_id'],skip_fields=['quantity_received','quantity_cancelled','quantity_returned','amount_returned','amount_cancelled','shipping_cancelled_amount','shipping_cancelled_tax_amount','approved_at','cancelled_at','received_at','returned_at','po_id','status','approved_by_user_id','cancelled_by_user_id','received_by_user_id','returned_by_user_id','cancelled_reason'])
+        poFields=getDynamicFormFields(po,request.user.domain_user_id,skip_related=['supplier_id'],skip_fields=['shipping_cancelled_amount','shipping_cancelled_tax_amount','approved_at','cancelled_at','received_at','returned_at','last_updated_by_user_id','status','approved_by_user_id','cancelled_by_user_id','received_by_user_id','returned_by_user_id','cancelled_reason'])
+        poItemFields=getDynamicFormFields(PurchaseOrderItems(),request.user.domain_user_id,skip_related=['product_id'],skip_fields=['quantity_received','quantity_cancelled','quantity_returned','amount_returned','amount_cancelled','shipping_cancelled_amount','shipping_cancelled_tax_amount','approved_at','cancelled_at','received_at','returned_at','po_id','status','approved_by_user_id','cancelled_by_user_id','received_by_user_id','returned_by_user_id','cancelled_reason'])
         return renderResponse(data={'poData':poData,'poItems':poItems,'poFields':poFields,'poItemFields':poItemFields},message='Purchase Order Fields',status=200)
+    
+
+    
     #       # See what user object is
     #      # Ensure the user is logged in
     # def get(self, request, id=None):
@@ -124,12 +127,12 @@ class CreatePurchaseOrderView(generics.CreateAPIView):
     def post(self,request,id=None):
         data=request.data
         data.update({'created_by_user_id':request.user.id})
-        data.update({'domain_user_id':request.user.domain_user_id.id})
+        data.update({'domain_user_id':request.user.id})
         data.update({'last_updated_by_user_id':request.user.id})
-        print("oooooooooooook")
+        print("tapas....")
         if id:
             print(id)
-            po=PurchaseOrder.objects.filter(domain_user_id=request.user.domain_user_id.id,id=id).first()
+            po=PurchaseOrder.objects.filter(domain_user_id=request.user.id,id=id).first()
             print(po)
             if po:
                 serializer=PurchaseOrderSerializer(po,data=data)
@@ -150,7 +153,7 @@ class PurchaseOrderListView(generics.ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset=PurchaseOrder.objects.filter(domain_user_id=self.request.user.domain_user_id.id)
+        queryset=PurchaseOrder.objects.filter(domain_user_id=self.request.user)                      #modifyed by
         return queryset
     
     @CommonListAPIMixin.common_list_decorator(PurchaseOrderListSerializer)

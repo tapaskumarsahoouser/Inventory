@@ -41,7 +41,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_category_id(self,obj):
-        return "#"+str(obj.category_id.id)+" "+obj.category_id.name
+        return "#"+str(obj.category_id)+" "+str(obj.category_id)               #Modify by tapas
     
     def get_domain_user_id(self,obj):
         return "#"+str(obj.domain_user_id)+" "+str(obj.domain_user_id)               # This function is changed by tapas.

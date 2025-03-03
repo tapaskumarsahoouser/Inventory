@@ -42,7 +42,7 @@ class UserWithFilterListView(generics.ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset=User.objects.filter(domain_user_id=self.request.user.domain_user_id.id)
+        queryset=User.objects.filter(domain_user_id=self.request.user.domain_user_id)              #modify by tapas
         return queryset
     
     @CommonListAPIMixinWithFilter.common_list_decorator(UserSerializerWithFilters)
@@ -56,7 +56,7 @@ class UpdateUsers(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return User.objects.filter(domain_user_id=self.request.user.domain_user_id.id,id=self.kwargs['pk'])
+        return User.objects.filter(domain_user_id=self.request.user.domain_user_id,id=self.kwargs['pk'])                #modify by tapas
 
     def perform_update(self,serializer):
         serializer.save()
