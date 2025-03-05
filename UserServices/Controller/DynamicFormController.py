@@ -188,3 +188,4 @@ class DynamicFormController(APIView):
 
         fields=getDynamicFormFields(model_instance,request.user.domain_user_id)
         return renderResponse(data=fields,message='Form fields fetched successfully')
+    
